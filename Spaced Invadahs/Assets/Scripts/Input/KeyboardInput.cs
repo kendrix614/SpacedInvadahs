@@ -20,38 +20,45 @@ public class KeyboardInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             print("SPACE");
+            goMario.Shoot();
         }
 
         // If Move Mario right
         if ( ( Input.GetKeyDown(KeyCode.Keypad6) ) || (Input.GetKeyDown(KeyCode.RightArrow) ) )
         {
-            //print("Keypad6 - Right");
-            goMario.newGear = Movement.WALKING_RIGHT;
+            // if move right key is down
+            goMario.horizontalGear = HorizontalMovement.RIGHT;
         } else if ( (Input.GetKeyUp(KeyCode.Keypad6) ) || (Input.GetKeyUp(KeyCode.RightArrow) ) ) {
-            //print("Keypad6 Up - Right");
-            goMario.newGear = Movement.STANDING_RIGHT;
+            // if move right key is released
+            goMario.horizontalGear = HorizontalMovement.NOTHING;
         }
 
         // If the player presses KeyPad4 then move Mario left
         if ( (Input.GetKeyDown(KeyCode.Keypad4)) || (Input.GetKeyDown(KeyCode.LeftArrow)) )
         {
-            //print("Keypad4 Down - Left");
-            goMario.newGear = Movement.WALKING_LEFT;
+            goMario.horizontalGear = HorizontalMovement.LEFT;
         } else if ((Input.GetKeyUp(KeyCode.Keypad4)) || (Input.GetKeyUp(KeyCode.LeftArrow)) ) {
-            //print("Keypad4 Up - Left");
-            goMario.newGear = Movement.STANDING_LEFT;
+            goMario.horizontalGear = HorizontalMovement.NOTHING;
         }
 
         // If the player presses Keypad8 then move Mario Up
-        if (Input.GetKeyDown(KeyCode.Keypad8))
+        if ((Input.GetKeyDown(KeyCode.Keypad8)) || (Input.GetKeyDown(KeyCode.UpArrow)))
         {
-            print("Keypad8 - Up");
+            goMario.VerticalGear = VerticalMovement.FORWARD;
+        }
+        else if ((Input.GetKeyUp(KeyCode.Keypad8)) || (Input.GetKeyUp(KeyCode.UpArrow)))
+        {
+            goMario.VerticalGear = VerticalMovement.NOTHING;
         }
 
         // If the player presses Keypad2 then make Mario Crouch
-        if (Input.GetKeyDown(KeyCode.Keypad2))
+        if ((Input.GetKeyDown(KeyCode.Keypad2)) || (Input.GetKeyDown(KeyCode.DownArrow)))
         {
-            print("Keypad2 - Crouch or down pipe");
+            goMario.VerticalGear = VerticalMovement.BACKWARD;
+        }
+        else if ((Input.GetKeyUp(KeyCode.Keypad2)) || (Input.GetKeyUp(KeyCode.DownArrow)))
+        {
+            goMario.VerticalGear = VerticalMovement.NOTHING;
         }
     }
 }

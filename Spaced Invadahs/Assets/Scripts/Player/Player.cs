@@ -2,35 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Movement
+public enum VerticalMovement
 {
-    WALKING_RIGHT,
-    WALKING_LEFT,
-    RUNNING_RIGHT,
-    RUNNING_LEFT,
-    JUMPING_RIGHT,
-    JUMPING_LEFT,
-    STANDING_LEFT,
-    STANDING_RIGHT,
+    FORWARD,
+    BACKWARD,
+    NOTHING
+}
+
+public enum HorizontalMovement
+{
+    RIGHT,
+    LEFT,
     NOTHING
 }
 
 public class Player : MonoBehaviour
 {
-    public Sprite marioStandsLeft;
-    public Sprite marioStandsRight;
-    public Sprite marioChangeDirectionLeft;
-    public Sprite marioChangeDirectionRight;
+    public GameObject projectileTemplate;
 
-    protected int currentAnimationFrame = 0;
-    public Sprite[] marioWalkingLeft;
-    public Sprite[] marioWalkingRight;
+    public Transform projectileSpawnPoint;
 
-    [HideInInspector] public Movement newGear = Movement.NOTHING;
-    [HideInInspector] public Movement currentGear = Movement.NOTHING;
+    [HideInInspector] public HorizontalMovement horizontalGear = HorizontalMovement.NOTHING;
+    [HideInInspector] public VerticalMovement VerticalGear = VerticalMovement.NOTHING;
 
     protected Vector3 moveRightAmount = new Vector3(.2f, 0, 0);
     protected Vector3 moveLeftAmount = new Vector3(-.2f, 0, 0);
+    protected Vector3 moveForwardAmount = new Vector3(0f, .2f, 0);
+    protected Vector3 moveBackwardAmount = new Vector3(0, -.2f, 0);
 
     public void MoveRight()
     {
@@ -38,12 +36,6 @@ public class Player : MonoBehaviour
 
         // Move Mario to the right
         this.gameObject.transform.position += moveRightAmount;
-
-        // update marios sprite
-        this.gameObject.GetComponent<SpriteRenderer>().sprite = marioWalkingRight[currentAnimationFrame];
-        currentAnimationFrame++;
-
-        if (currentAnimationFrame >= marioWalkingRight.Length) currentAnimationFrame = 0;
     }
 
     public void MoveLeft()
@@ -52,24 +44,26 @@ public class Player : MonoBehaviour
 
         // Move Mario to the left
         this.gameObject.transform.position += moveLeftAmount;
+    }
+    public void MoveForward()
+    {
+        // Check if Mario can move right
 
-        // update marios sprite
-        this.gameObject.GetComponent<SpriteRenderer>().sprite = marioWalkingLeft[currentAnimationFrame];
-        currentAnimationFrame++;
-
-        if (currentAnimationFrame >= marioWalkingLeft.Length) currentAnimationFrame = 0;
+        // Move Mario to the right
+        this.gameObject.transform.position += moveForwardAmount;
     }
 
-    public void StandRight()
+    public void MoveBackward()
     {
-        // Change Mario to stand left
-        
+        // Check if Mario can move left
+
+        // Move Mario to the left
+        this.gameObject.transform.position += moveBackwardAmount;
     }
 
-    public void StandLeft()
+    public void Shoot()
     {
-        // Change Mario to stand left
-
+        Instantiate(projectileTemplate, projectileSpawnPoint.position, Quaternion.identity);
     }
 
     private float timerLength = 0.025f;
@@ -90,41 +84,24 @@ public class Player : MonoBehaviour
 
     public void TimerEnded()
     {
-        //print("TimerEnded");
-        if (newGear != currentGear)
+        // check if forward or backward
+        if (VerticalGear == VerticalMovement.FORWARD)
         {
-            // Change Mario's Sprite to a new Sprite
-            if (newGear == Movement.STANDING_LEFT)
-            {
-                print("marioChangeDirectionLeft");
-                this.gameObject.GetComponent<SpriteRenderer>().sprite = marioChangeDirectionLeft;
-            }
-            else if (newGear == Movement.STANDING_RIGHT)
-            {
-                print("marioChangeDirectionRight");
-                this.gameObject.GetComponent<SpriteRenderer>().sprite = marioChangeDirectionRight;
-            }
-
-            // Change Mario's previousGear to match
-            currentGear = newGear;
-        } else
+            MoveForward();
+        }
+        else if (VerticalGear == VerticalMovement.BACKWARD)
         {
-            // Keep Mario moving in his current direction
-            if (currentGear == Movement.STANDING_LEFT)
-            {
-                this.gameObject.GetComponent<SpriteRenderer>().sprite = marioStandsLeft;
-            }
-            else if (currentGear == Movement.STANDING_RIGHT)
-            {
-                this.gameObject.GetComponent<SpriteRenderer>().sprite = marioStandsRight;
-            } else if (currentGear == Movement.WALKING_LEFT)
-            {
-                MoveLeft();
-            }
-            else if (currentGear == Movement.WALKING_RIGHT)
-            {
-                MoveRight();
-            }
+            MoveBackward();
+        }
+        
+        // check if left or right
+        if (horizontalGear == HorizontalMovement.LEFT)
+        {
+            MoveLeft();
+        }
+        else if (horizontalGear == HorizontalMovement.RIGHT)
+        {
+            MoveRight();
         }
     }
 }
